@@ -6,6 +6,7 @@ import com.example.security.Services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,12 @@ public class configration {
             userService.saveRole(new Role("Editor"));
             userService.saveRole(new Role("Viewer"));
 
-            userService.saveAppUser(new AppUser("Tariq","TariqElamin", "123", new ArrayList<>()));
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
+
+            AppUser user1 = new AppUser("Tariq","TariqElamin", "123", new ArrayList<>());
+            user1.setPassword(encoder.encode(user1.getPassword()));
+
+            userService.saveAppUser(user1);
             userService.saveAppUser(new AppUser("Chase","ChaseTanner", "123", new ArrayList<>()));
             userService.saveAppUser(new AppUser("mohamed","MohamedAbdul", "123", new ArrayList<>()));
             userService.saveAppUser(new AppUser("Razan","RazanTariq", "123", new ArrayList<>()));

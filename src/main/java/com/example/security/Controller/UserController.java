@@ -7,6 +7,7 @@ import com.example.security.Services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,12 +26,20 @@ public class UserController {
     }
 
     @GetMapping(path="/users")
+
     public ResponseEntity<List<AppUser>> getUser() {
         return ResponseEntity.ok().body(serviceLayer.getUsers());
     }
+    @PostMapping("/user/login")
+    public ResponseEntity<?> login(@RequestBody AppUser user) {
+        return ResponseEntity.ok().body(serviceLayer.authUser(user));
+    }
 
-    @PostMapping(path="/user/save")
+    @PostMapping(path="/user/register")
     public ResponseEntity<AppUser> saveUser(@RequestBody AppUser user) {
+        System.out.println(user.getPassword());
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
+        user.setPassword(encoder.encode(user.getPassword()));
         serviceLayer.saveAppUser(user);
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
         return ResponseEntity.created(uri).body(user);
