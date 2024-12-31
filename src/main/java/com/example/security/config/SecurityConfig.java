@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @EnableWebSecurity
@@ -20,10 +21,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig{
 
     private final MyUserDetailes userDetailsService;
+    private final JwtFillter jwtFillter;
 
     @Autowired
-    public SecurityConfig(MyUserDetailes userDetailsService) {
+    public SecurityConfig(MyUserDetailes userDetailsService, JwtFillter jwtFillter) {
         this.userDetailsService = userDetailsService;
+        this.jwtFillter = jwtFillter;
     }
 
     @Bean
@@ -36,6 +39,7 @@ public class SecurityConfig{
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
+                .addFilterBefore(jwtFillter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
